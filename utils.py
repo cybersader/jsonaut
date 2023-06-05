@@ -1,4 +1,6 @@
 import json
+import sys
+
 import ijson
 import re
 import heapq
@@ -2593,7 +2595,7 @@ def transform_columns_in_csv(input_csv, transformations_dict, chunksize=10000):
     return output_csv_filepath
 
 
-def bulk_value_search(csv_filepath, values_to_search, truncation_limit = 32000, chunksize = 10000):
+def bulk_value_search(csv_filepath, values_to_search, truncation_limit=32000, chunksize=10000):
     # Count the total number of rows
     total_rows = count_rows_in_chunks(csv_filepath, chunksize)
 
@@ -2633,185 +2635,19 @@ def bulk_value_search(csv_filepath, values_to_search, truncation_limit = 32000, 
             pbar.update(chunk.shape[0])
 
 
-def generate_pivot_table2(input_csv, index_cols, pivot_cols=None, value_cols=None, aggfunc='count', chunksize=10000):
-    # Handle empty strings for pivot_cols and value_cols
-    pivot_cols = None if not pivot_cols else pivot_cols
-    value_cols = None if not value_cols else value_cols
+def generate_pivot_table(input_csv, index_cols, pivot_cols=None, value_cols=None, chunksize=10000, aggfunc='count',
+                         group_by=False, group_by_cols=None):
+    # Convert empty strings to None
+    pivot_cols = None if pivot_cols == "" else pivot_cols
+    index_cols = None if index_cols == "" else index_cols
+    value_cols = None if value_cols == "" else value_cols
+    group_by_cols = None if group_by_cols == "" else group_by_cols
 
-    # Create the output CSV file path with "pivot__" appended to the front
-    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
-
-    # Count the total number of rows
-    total_rows = count_rows_in_chunks(input_csv, chunksize)
-
-    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
-        # Initialize DataFrame for the full pivot table
-        full_pivot_table = pd.DataFrame()
-
-        # Iterate over the input CSV file in chunks
-        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
-            # Generate the pivot table for the current chunk
-            chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols,
-                                                  aggfunc=aggfunc)
-
-            # Concatenate the chunk's pivot table to the full pivot table
-            full_pivot_table = pd.concat([full_pivot_table, chunk_pivot_table])
-
-            pbar.update(chunk.shape[0])
-
-    # Write the full pivot table to the output CSV file
-    full_pivot_table.to_csv(output_csv_filepath)
-
-    return output_csv_filepath
-
-
-def generate_pivot_table3(input_csv, index_cols, pivot_cols=None, value_cols=None, aggfunc='count', chunksize=10000):
-    # Create the output CSV file path with "pivot__" appended to the front
-    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
-
-    # Count the total number of rows
-    total_rows = count_rows_in_chunks(input_csv, chunksize)
-
-    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
-        # Initialize DataFrame for the full pivot table
-        full_pivot_table = pd.DataFrame()
-        total_pivot_table = pd.DataFrame()
-
-        # Iterate over the input CSV file in chunks
-        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
-            # Generate the pivot table for the current chunk
-            chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols,
-                                                  aggfunc=aggfunc)
-
-            # Generate the pivot table for total counts
-            chunk_total_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols,
-                                                        aggfunc='size')
-
-            # Concatenate the chunk's pivot table to the full pivot table
-            full_pivot_table = pd.concat([full_pivot_table, chunk_pivot_table])
-
-            # Concatenate the chunk's total pivot table to the total pivot table
-            total_pivot_table = pd.concat([total_pivot_table, chunk_total_pivot_table])
-
-            pbar.update(chunk.shape[0])
-
-    # Add a column for totals
-    full_pivot_table['Total'] = total_pivot_table.sum(axis=1)
-
-    # Write the full pivot table to the output CSV file
-    full_pivot_table.to_csv(output_csv_filepath)
-
-    return output_csv_filepath
-
-
-def generate_pivot_table213(input_csv, index_cols, pivot_cols=None, value_cols=None, aggfunc='count', chunksize=10000):
-    pivot_cols = None if not pivot_cols else pivot_cols
-    value_cols = None if not value_cols else value_cols
-
-    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
-
-    total_rows = count_rows_in_chunks(input_csv, chunksize)
-
-    total_count = 0
-    unique_values = set()
-
-    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
-        full_pivot_table = pd.DataFrame()
-
-        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
-            total_count += chunk[value_cols].count().sum()
-            unique_values.update(chunk[value_cols].unique())
-
-            if aggfunc == 'unique count':
-                chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols,
-                                                      aggfunc=pd.Series.nunique)
-            else:
-                chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols,
-                                                      aggfunc=aggfunc)
-            full_pivot_table = pd.concat([full_pivot_table, chunk_pivot_table])
-
-            pbar.update(chunk.shape[0])
-
-    unique_count = len(unique_values)
-    full_pivot_table['Total Count'] = total_count
-    full_pivot_table['Unique Count'] = unique_count
-
-    full_pivot_table.to_csv(output_csv_filepath)
-
-    return output_csv_filepath
-
-
-def generate_pivot_table2(input_csv, index_cols, pivot_cols=None, value_cols=None, aggfunc='count', chunksize=10000):
-    pivot_cols = None if not pivot_cols else pivot_cols
-    value_cols = None if not value_cols else value_cols
-
-    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
-
-    total_rows = count_rows_in_chunks(input_csv, chunksize)
-
-    total_count = 0
-    unique_values = set()
-
-    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
-        full_pivot_table = pd.DataFrame()
-
-        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
-            total_count += chunk[value_cols[0]].count().sum()
-            for col in value_cols:
-                unique_values.update(chunk[col].unique())
-
-            if aggfunc == 'unique count':
-                chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols[0],
-                                                      aggfunc=pd.Series.nunique)
-            else:
-                chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=value_cols[0],
-                                                      aggfunc=aggfunc)
-            full_pivot_table = pd.concat([full_pivot_table, chunk_pivot_table])
-
-            pbar.update(chunk.shape[0])
-
-    unique_count = len(unique_values)
-    full_pivot_table['Total Count'] = total_count
-    full_pivot_table['Unique Count'] = unique_count
-
-    full_pivot_table.to_csv(output_csv_filepath)
-
-    return output_csv_filepath
-
-
-def generate_pivot_table3(input_csv, index_cols, pivot_cols=None, value_cols=None, aggfunc='count', chunksize=10000):
-    pivot_cols = None if not pivot_cols else pivot_cols
-    value_cols = None if not value_cols else value_cols
-
-    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
-
-    total_rows = count_rows_in_chunks(input_csv, chunksize)
-
-    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
-        # Initialize a list of DataFrames for each value column and aggregation function
-        full_pivot_tables = []
-
-        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
-            for col in value_cols:
-                # Create a pivot table for each aggregation function
-                for func in [pd.Series.nunique, 'count']:
-                    chunk_pivot_table = chunk.pivot_table(index=index_cols, columns=pivot_cols, values=col,
-                                                          aggfunc=func)
-                    full_pivot_tables.append(chunk_pivot_table)
-
-            pbar.update(chunk.shape[0])
-
-    # Concatenate all pivot tables along the columns axis
-    full_pivot_table = pd.concat(full_pivot_tables, axis=1)
-
-    full_pivot_table.to_csv(output_csv_filepath)
-
-    return output_csv_filepath
-
-
-def generate_pivot_table(input_csv, index_cols, pivot_cols=None, value_cols=None, chunksize=10000):
-    pivot_cols = None if not pivot_cols else pivot_cols
-    value_cols = None if not value_cols else value_cols
+    # Convert single item strings to lists
+    index_cols = [index_cols] if isinstance(index_cols, str) else index_cols
+    pivot_cols = [pivot_cols] if isinstance(pivot_cols, str) else pivot_cols
+    value_cols = [value_cols] if isinstance(value_cols, str) else value_cols
+    group_by_cols = [group_by_cols] if isinstance(group_by_cols, str) else group_by_cols
 
     output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"pivot__{os.path.basename(input_csv)}")
 
@@ -2826,10 +2662,11 @@ def generate_pivot_table(input_csv, index_cols, pivot_cols=None, value_cols=None
 
     full_pivot_tables = []
 
+    # Generate pivot table
     for col in value_cols:
         # Create a pivot table with total counts
         full_pivot_table_count = full_data.pivot_table(index=index_cols, columns=pivot_cols, values=col,
-                                                       aggfunc='count', fill_value=0)
+                                                       aggfunc=aggfunc, fill_value=0)
         full_pivot_table_count.columns = [f'{col}_count' for _ in full_pivot_table_count.columns]
 
         # Create a pivot table with unique counts
@@ -2841,8 +2678,114 @@ def generate_pivot_table(input_csv, index_cols, pivot_cols=None, value_cols=None
 
     # Concatenate all pivot tables along the columns axis
     full_pivot_table = pd.concat(full_pivot_tables, axis=1)
-
     full_pivot_table.to_csv(output_csv_filepath)
 
+    if group_by:
+        # Generate grouped table
+        grouped_df = full_data.groupby(index_cols + group_by_cols).agg({group_by_cols[0]: 'count'})
+        grouped_df.columns = ['groupby_' + col.strip() for col in
+                              grouped_df.columns.values]  # Removed 'nunique' operation
+        grouped_df.reset_index(inplace=True)
+
+        # Create new columns
+        grouped_df['groupby_col__' + group_by_cols[0]] = grouped_df[group_by_cols[0]]
+        grouped_df['groupby_counts__' + group_by_cols[0]] = grouped_df['groupby_' + group_by_cols[0]]
+
+        # Merge pivot and grouped tables
+        final_df = pd.merge(full_pivot_table, grouped_df, on=index_cols, how='left')
+
+        # Drop the redundant columns
+        final_df.drop(columns=['groupby_' + group_by_cols[0], group_by_cols[0]], inplace=True)
+
+        final_df.to_csv(output_csv_filepath, index=False)
+    else:
+        full_pivot_table.to_csv(output_csv_filepath, index=False)
+
     return output_csv_filepath
+
+
+def process_csv_remove_parentheses(input_csv, columns, chunksize=10000, edit_in_place=True):
+    # Define the output CSV filepath
+    output_csv_filepath = os.path.join(os.path.dirname(input_csv), f"no_parentheses__{os.path.basename(input_csv)}")
+
+    # Get the total number of rows for the progress bar
+    total_rows = count_rows_in_chunks(input_csv, chunksize)
+
+    with tqdm(total=total_rows, desc='Processing chunks', unit=' rows', ncols=100) as pbar:
+        # Initialize an empty DataFrame to hold the processed data
+        processed_data = pd.DataFrame()
+
+        # Read the CSV in chunks
+        for chunk in pd.read_csv(input_csv, chunksize=chunksize, low_memory=False):
+            # Process the specified columns
+            for col in columns:
+                if col in chunk.columns:
+                    # Edit column in place or create a new column
+                    new_col_name = col if edit_in_place else '__' + col
+                    chunk[new_col_name] = chunk[col].apply(lambda x: re.sub(r'\(.*?\)', '', str(x)).rstrip())
+
+            # Append the processed chunk to the processed_data DataFrame
+            processed_data = pd.concat([processed_data, chunk])
+
+            # Update the progress bar
+            pbar.update(chunk.shape[0])
+
+    # Write the processed data to the output CSV file
+    processed_data.to_csv(output_csv_filepath, index=False)
+
+    # Return the filepath of the output CSV
+    return output_csv_filepath
+
+
+def csv_analytics(input_csv: str, output_csv: Optional[str] = None):
+    file_ext = os.path.splitext(input_csv)[1].lower()
+    if file_ext != '.csv':
+        print(f"The input file '{input_csv}' is not a CSV file. Please provide a valid CSV file.")
+        return
+
+    chunksize = 10000
+    all_keys = set()
+
+    stats = {}
+
+    with open(input_csv, encoding='utf-8') as f:
+        total_rows = sum(
+            1 for _ in tqdm(f, desc='Counting rows', unit=' rows', ncols=100)) - 1  # Subtract 1 for the header
+
+    num_chunks = (total_rows // chunksize) + 1
+
+    progress_bar = tqdm(total=total_rows, desc='Processing rows', unit=' rows', ncols=100)
+
+    for chunk in pd.read_csv(input_csv, chunksize=chunksize, encoding='utf-8', low_memory=False):
+        progress_bar.update(chunksize)
+        for col in chunk.columns:
+            all_keys.add(col)
+            if col not in stats:
+                stats[col] = {'total': 0, 'non_null': 0, 'null': 0, 'unique': set()}
+            stats[col]['total'] += len(chunk)
+            stats[col]['non_null'] += chunk[col].count()
+            stats[col]['null'] += chunk[col].isnull().sum()
+            stats[col]['unique'].update(chunk[col].dropna().unique())
+
+    progress_bar.close()
+    output_data = []
+
+    datetime_str = get_datetime()
+    if output_csv:
+        output_filename = output_csv
+    else:
+        output_filename = f"csv_analytics_{datetime_str}.csv"
+
+    for key in all_keys:
+        output_data.append({
+            'name': key,
+            'total': stats[key]['total'],
+            'non_null': stats[key]['non_null'],
+            'null': stats[key]['null'],
+            'unique': len(stats[key]['unique'])
+        })
+
+    output_df = pd.DataFrame(output_data)
+    output_df.to_csv(output_filename, index=False)
+    return output_filename
 

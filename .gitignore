@@ -1,0 +1,45 @@
+# Ignore CSV files
+*.csv
+
+# Ignore files that begin with "config__"
+config__*
+
+# Ignore most JSON files
+*.json
+!config.json
+
+# Ignore specific files
+
+# Byte-compiled / optimized Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Environment related files
+.env
+.env.*
+venv/
+env/
+env.bak/
+env.tmp/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Compiled Python files
+*.pyc
+
+# Log files
+*.log
+
+# OS or editor-specific files
+.DS_Store
+Thumbs.db
+

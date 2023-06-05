@@ -1,14 +1,13 @@
 import csv
 
-from searchAndFlatten22 import search_and_flatten_to_csv, get_flattened_csv_headers_from_json
+from searchAndFlatten import search_and_flatten_to_csv, get_flattened_csv_headers_from_json
 from buildJsonExample import build_example_json
-from outputCsvAnalytics import csv_analytics
 from utils import trim_json, bulk_rename_csv_headers, reformat_json, truncate_json, collapse_json, \
     filter_rows_by_priority, unique_values_with_counts_chunked, generate_column_analytics, \
     join_large_csvs, extract_business_units, remap_values_in_csv, rename_csv_file, find_ip_keys_in_json, \
     array_to_csv, extract_first_value_from_lists_in_csv, select_columns_from_csv, fill_empty_values_in_csv, \
     remove_rows_with_empty_values, format_datetime_columns_in_csv, transform_columns_in_csv, \
-    bulk_value_search, generate_pivot_table
+    bulk_value_search, generate_pivot_table, process_csv_remove_parentheses, csv_analytics
 
 import argparse
 import json
@@ -241,6 +240,7 @@ def main():
                                                value_check_mode='field')
             print(f'[+] "get_column_analytics", output: {output}')
 
+        # TODO finish this or refactor
         if job.get("type") == "analyze_csv":
             print_job_start(job_index, total_jobs, job_name, job)
             job_matched = True
@@ -417,14 +417,31 @@ def main():
             index_cols = job.get("index_cols")
             pivot_cols = job.get("pivot_cols")
             value_cols = job.get("value_cols")
-            #  aggfunc = job.get("aggfunc") TODO: revisit pivot table later
+            group_by_cols = job.get("group_by_cols")
+            group_by = job.get("group_by")
+            aggfunc = job.get("aggfunc") # TODO: revisit pivot table later
             output = generate_pivot_table(input_csv=input_csv,
                                           index_cols=index_cols,
                                           pivot_cols=pivot_cols,
                                           value_cols=value_cols,
-                                          # aggfunc=aggfunc,
+                                          aggfunc=aggfunc,
+                                          group_by_cols=group_by_cols,
+                                          group_by=group_by,
                                           chunksize=10000)
             print(f'[+] "pivot_table", output: {output}')
+
+        if job.get("type") == "process_csv_remove_parentheses":
+            print_job_start(job_index, total_jobs, job_name, job)
+            job_matched = True
+
+            input_csv = job.get("input_csv")
+            index_cols = job.get("columns")
+            edit_in_place = job.get("edit_in_place", False)
+            output = process_csv_remove_parentheses(input_csv=input_csv,
+                                                    columns=index_cols,
+                                                    edit_in_place=edit_in_place,
+                                                    chunksize=10000)
+            print(f'[+] "process_csv_remove_parentheses", output: {output}')
 
         # display progress
         if not job_matched:
