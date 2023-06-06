@@ -14,6 +14,11 @@
 </p>
 
 <!-- Screenshots and Gifs -->
+### How to use Jsonaut
+1. [Code some Python](#make-your-own-python-jobs-) (or use premade functions) 🐍
+2. [Attach it to `main.py`](#adding-jobs-example-)
+3. [Configure a jobs file](#adding-jobs-example-)
+4. [**Run it!**](#running-python-jobs-) (GUI, programmatically, using `pyton main.py --config <some_jobs_file.json>)
 
 ### Run GUI
 
@@ -146,7 +151,7 @@ Remember to consult the detailed documentation and examples provided to understa
 **Jsonaut is extensible - 3 steps needed to fully add your own jobs:**
 1. Add a Python function to the code (I added the current ones to `utils.py`)
 2. `import` the function in `main.py`
-3. Add it to a config file
+3. Add it to a jobs config file
 4. (optional) add it to the `job_schema.json` to work with the Builder GUI (alpha)
 5. Run it (Usage section above)
 
