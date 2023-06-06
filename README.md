@@ -10,7 +10,7 @@
 
 <!-- PROJECT DESCRIPTION -->
 <p align="center">
-  An open source library and utility for exploring, analyzing, and flattening JSON files of any size into CSVs, along with CSV transformations, dynamic filtering, and all with low memory utilization.
+  A library and utility for exploring, analyzing, and flattening JSON files of any size into CSVs, along with CSV transformations, dynamic filtering, and all with low memory utilization. This is a workflow for running Python locally for data engineering tasks and was originally meant for integrating security tool data.
 </p>
 
 <!-- Screenshots and Gifs -->
