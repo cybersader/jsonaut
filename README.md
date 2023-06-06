@@ -142,9 +142,9 @@ For advanced users who wish to extend Jsonaut with their own transformations or 
 
 Remember to consult the detailed documentation and examples provided to understand how Jsonaut works and how to effectively extend its functionalities.
 
-## Developing Python Jobs
-**Jsonaut is extensible and there's only 3 steps to fully adding your own jobs:**
-1. Add a Python function to the code
+## Developing Python Jobs 🐍
+**Jsonaut is extensible - 3 steps needed to fully add your own jobs:**
+1. Add a Python function to the code (I added the current ones to `utils.py`)
 2. `import` the function in `main.py`
 3. Add it to a config file
 4. (optional) add it to the `job_schema.json` to work with the Builder GUI (alpha)
