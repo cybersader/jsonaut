@@ -30,7 +30,7 @@ To use the Run GUI:
 
 The Builder GUI aids in the streamlined creation of JSON jobs config files.
 
-> ❗ It currently lacks the ability to move jobs around, choose multiple variables, and easily configure a job's schema. However, you are encouraged to manually edit the JSON config files according to your needs. Manual editing does not require adding anything to the jobs_schema.json file.
+> ❗ It currently lacks the ability to move jobs around, choose multiple variables, and easily configure a job's schema. However, you are encouraged to manually edit the JSON config files according to your needs. Manual editing does not require adding anything to the job_schema.json file.
 
 ![jsonaut_el5PHg64SI](https://github.com/cybersader/jsonaut/assets/106132469/157439f1-c61a-46f5-be5a-629999035088)
 
@@ -40,7 +40,7 @@ To use the Builder GUI:
 3. Save your file and it's ready for use with the Run GUI!
       - ❗ **Alternatively, edit a JSON file and prepend "config__" to the front so the "Run" GUI automatically detects it.**
 
-⚠ Warning: because the Builder is not finished, and it requires editing a jobs_schema.json file, then it is usually better to create your own "config__<name here>.json" files.
+⚠ Warning: because the Builder is not finished, and it requires editing a job_schema.json file, then it is usually better to create your own "config__<name here>.json" files.
 ___
 
 ## Uses of Jsonaut
@@ -143,8 +143,16 @@ For advanced users who wish to extend Jsonaut with their own transformations or 
 Remember to consult the detailed documentation and examples provided to understand how Jsonaut works and how to effectively extend its functionalities.
 
 ## Developing Python Jobs
+**Jsonaut is extensible and there's only 3 steps to fully adding your own jobs:**
+1. Add a Python function to the code
+2. `import` the function in `main.py`
+3. Add it to a config file
+4. (optional) add it to the `job_schema.json` to work with the Builder GUI (alpha)
+5. Run it (Usage section above)
 
-### 🛠️ IDEs for Python and Development
+### Prereqs for Editing Jobs (Software)
+
+#### 🛠️ IDEs for Python Development
 There are many IDEs you can use for Python development. Some of the popular ones are:
 1.  [PyCharm](https://www.jetbrains.com/pycharm/)
 2.  [Visual Studio Code](https://code.visualstudio.com/)
@@ -152,10 +160,10 @@ There are many IDEs you can use for Python development. Some of the popular ones
 4.  [Sublime Text](https://www.sublimetext.com/)
 Select an IDE that suits your preference and comfort level. Each of these IDEs supports Python and should work with Jsonaut.
 
-### Manual JSON Configuration for Jobs
-If the Builder GUI does not support a specific feature you need, you can manually edit the JSON configuration files. The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `jobs_schema.json` file unless you want to use the job with the Builder GUI.
+#### Manual JSON Configuration for Jobs
+If the Builder GUI does not support a specific feature you need, you can manually edit the JSON configuration files. The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `job_schema.json` file unless you want to use the job with the Builder GUI.
 
-#### Local Editors:
+##### Local Editors:
   -   [Visual Studio Code](https://code.visualstudio.com/): This is a feature-rich code editor that can handle JSON files with ease. It offers IntelliSense for auto-completing code and providing helpful information, as well as built-in Git commands. It also supports a wide array of plugins for enhancing functionality.
 -   [Sublime Text](https://www.sublimetext.com/): This is a sophisticated text editor for code, markup, and prose. It has a slick user interface and exceptional performance. Sublime Text also has a rich ecosystem of plugins for extended functionalities.
 -   [Atom](https://atom.io/): Atom is a hackable text editor for the 21st Century, built by GitHub. It's customizable and supports a vast library of plugins for added functionality. Atom also handles JSON files well.
@@ -170,3 +178,126 @@ If the Builder GUI does not support a specific feature you need, you can manuall
 -   [Code Beautify JSON Editor](https://codebeautify.org/jsonviewer): A versatile tool that allows you to view, edit, and format JSON. It also has functionality to convert between JSON and other data formats.
 -   [JSON Formatter & Editor](https://jsonformatter.org/): This online tool helps to format, validate, save, share, and edit JSON data.
 
+### Configuring JSON Files
+Jsonaut leverages JSON files to define jobs and their parameters. An example of a simple configuration JSON file is:
+```
+{
+    "jobs": [
+        {
+            "name": "example_job",
+            "type": "example_job_type",
+            "input_csv": "example.csv",
+            "example_parameter": ["item_1", "item_2"]
+        }
+    ]
+}
+
+```
+In the "jobs" array, each object represents a job that Jsonaut will execute. 
+Required fields in a `job` object:
+- `name` - recognizable name for that step/job
+- `type` - how Jsonaut runs the applicable function (checks job type in main.py)
+
+## Adding Jobs to the Code 🤩🐍
+When adding new jobs to the code in `main.py`, you will need to handle each job's parameters individually. You can use the `get` method on the job dictionary object to fetch these parameters. `get` is a safer way to access a dictionary's value since it won't cause an error if the key doesn't exist; it will simply return `None`.
+
+First, let's define a new function in a new Python file that performs a specific job. This function takes parameters that configure how the job should be done. Here's an example:
+```
+# File: my_jobs.py (Jsonaut uses utils.py, but you can use whatever you want)
+
+def my_new_job(input_csv, column_name, new_value):
+    # logic to read CSV, change a specific column's value to 'new_value', and save the file.
+
+```
+After creating your function in a separate file, you can import it to `main.py` and then define a new job type:
+
+```
+# main.py file
+
+# import your function
+from my_jobs import my_new_job
+
+# ...
+
+# inside main() function
+
+if job.get("type") == "my_new_job":
+    input_csv = job.get("input_csv")
+    column_name = job.get("column_name")
+    new_value = job.get("new_value")
+    
+    # call your job function
+    my_new_job(input_csv, column_name, new_value)
+
+```
+
+You can add the new job in the config JSON file:
+```
+{
+    "jobs": [
+        {
+            "name": "my_new_job_1",
+            "type": "my_new_job",
+            "input_csv": "example.csv",
+            "column_name": "asset_category",
+            "new_value": "new_category"
+        }
+    ]
+}
+```
+
+## Updating the Job Schema ⚠(only if you use the Builder GUI)
+The job_schema.json file is a crucial part of the configuration, as it defines the structure and parameters for each job. Let's look at how we can add and modify job definitions in this file.
+
+Each job in the job_schema.json file is defined as a JSON object in the job_schema array. Every job object should have the following properties:
+
+type: This is the name of the job, which should match the function name in your code.
+default_name: A friendly name for the job that gets filled in the builder widget when the job is selected.
+input_param: The main input parameter for the job. This tells the builder widget which parameter is the primary one.
+input_match: A regular expression that validates the type of file that can match the input_param.
+params: An object that describes each parameter that the job requires. This is a key component of the job schema.
+The params object in turn consists of the following properties for each parameter:
+
+type: Specifies the data type of the parameter. It can be file, list, dict, int, float, num, or number.
+For parameters of dict type, there are a couple of additional properties:
+
+options: Descriptions for the keys in the dictionary. These descriptions are displayed when editing the object in the Builder.
+default: The default value for the parameter. This is the value that gets loaded into the Builder when the job type is selected.
+And finally, every job object also has:
+
+output_prepends: A string that gets prepended to the output filename.
+output_ext: The extension of the output file.
+Remember, when adding a new job or modifying an existing one, the type in the job_schema.json file should match the function name in your code, and the parameter names in the params object should match the parameters in your function definition.
+
+After updating the job_schema.json file, you can then use the updated schema in the JSON config file to define and configure the jobs that should be executed.
+
+Here's an example of how a job object might look in the job_schema.json file:
+```
+{
+  "type": "rename_columns",
+  "default_name": "rename_columns",
+  "input_param": "input_csv",
+  "input_match": ".+\\.csv$",
+  "params": {
+    "input_csv": {
+      "type": "file"
+    },
+    "rename_obj": {
+      "type": "dict",
+      "options": {
+        "keys": "Old column names (exact matches)",
+        "values": "New column names (exact matches)"
+      },
+      "default": {}
+    },
+    "similarity_threshold": {
+      "type": "float",
+      "default": 0.9
+    }
+  },
+  "output_prepends": "{input_csv_name}_newjob__",
+  "output_ext": "csv"
+}
+  
+```
+The rename_columns job defined above takes an input_csv file and a rename_obj dictionary as input, and produces a CSV file with renamed columns.
