@@ -83,7 +83,7 @@ If you simply want to use Jsonaut without installing any prerequisites or going 
 1.  First, you need to clone the repository. If you don't have Git installed, you can download it from the [official Git website](https://git-scm.com/downloads).
 2.  Open a terminal, navigate to the directory where you want to clone the repository and run:
     ```
-    bashCopy codegit clone <repository-url>
+    git clone https://github.com/cybersader/jsonaut
     ```
 3.  Proceed to the Installation & Setup section.
 
