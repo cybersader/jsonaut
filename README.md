@@ -161,7 +161,7 @@ There are many IDEs you can use for Python development. Some of the popular ones
 Select an IDE that suits your preference and comfort level. Each of these IDEs supports Python and should work with Jsonaut.
 
 #### Manual JSON Configuration for Jobs
-If the Builder GUI does not support a specific feature you need, you can manually edit the JSON configuration files. The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `job_schema.json` file unless you want to use the job with the Builder GUI.
+If the Builder GUI does not support a specific feature you need, you can [manually edit the JSON configuration files](#configuring-json-files). The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `job_schema.json` file unless you want to use the job with the Builder GUI.
 
 ##### Local Editors:
   -   [Visual Studio Code](https://code.visualstudio.com/): This is a feature-rich code editor that can handle JSON files with ease. It offers IntelliSense for auto-completing code and providing helpful information, as well as built-in Git commands. It also supports a wide array of plugins for enhancing functionality.
@@ -221,13 +221,19 @@ from my_jobs import my_new_job
 
 # inside main() function
 
-if job.get("type") == "my_new_job":
-    input_csv = job.get("input_csv")
-    column_name = job.get("column_name")
-    new_value = job.get("new_value")
-    
-    # call your job function
-    my_new_job(input_csv, column_name, new_value)
+# where the jobs are attached to jsonaut
+for job_index, job in enumerate(jobs):
+    job_name = job.get("name")
+
+    job_matched = False
+
+    if job.get("type") == "my_new_job":
+        input_csv = job.get("input_csv")
+        column_name = job.get("column_name")
+        new_value = job.get("new_value")
+
+        # call your job function
+        my_new_job(input_csv, column_name, new_value)
 
 ```
 
