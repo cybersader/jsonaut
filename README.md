@@ -107,10 +107,35 @@ Before installing Jsonaut, you need to ensure that you have the following prereq
     ```
 
 ### Setting up Jsonaut
+####There are 4 ways to setup and use Jsonaut (Look at below Usage section for more detail):
 1.  **Run the GUI.py file:** If you want to use Jsonaut's GUI, you can just run the `GUI.py` file in your Python environment.
 2.  **Run main.py with config files:** If you prefer using the CLI, you can run Jsonaut's main functionality with the command: `python main.py --config "config__<text>.json"`. Replace `<text>` with your desired configuration.
 3.  **Build the executable using setup.py:** If you want to build the Jsonaut executable, you can use the `setup.py` script. Running `python setup.py` will build the executable. If you want to run Jsonaut after building, use `python setup.py --run`.
 4.  **Use the pre-built executable:** If you have downloaded the executable from the Releases section, you can just run it directly. No installation or Python environment setup is needed.
+
+# Usage
+**Jsonaut** is flexible and can be used in different scenarios depending on your specific requirements. Here are some typical use cases:
+#### 1\. Running Predefined Jobs with the GUI 🖥️
+If you simply want to execute predefined jobs and enjoy a user-friendly interface, Jsonaut's GUI is your best option. In this case, you don't need to touch any Python code or even have Python installed.
+-   If you've built or downloaded the **Jsonaut executable**, just run it directly. No installation or Python environment setup is needed.
+-   Alternatively, you can **download the project** and run the `GUI.py` file in your Python environment.
+
+#### 2\. Running Jobs from the Command Line 📜
+For those who prefer a command line interface or need to integrate Jsonaut into other scripts or workflows, you can directly use Jsonaut's main functionality from the command line.
+-   Download the project and run the command: `python main.py --config "config__<text>.json"`. Replace `config__<text>` with your specific JSON configuration file.
+
+#### 3\. Building Your Own Executable 🛠️
+If you want to distribute your own version of Jsonaut or customize the build process, you can use the `setup.py` script provided.
+-   Download the project and run `python setup.py`. This will build the executable.
+-   If you want to run Jsonaut immediately after building, use `python setup.py --run`.
+
+#### 4\. Developing Your Own Transformations with Python 🐍
+For advanced users who wish to extend Jsonaut with their own transformations or features, you can utilize the power of Python and the extensibility of the Jsonaut architecture.
+-   Download the project and import the Jsonaut library in your Python code.
+-   Develop your custom transformations following the same structure used in Jsonaut's built-in transformations.
+-   Run your transformations through the Jsonaut system by either using the GUI or the command line.
+
+Remember to consult the detailed documentation and examples provided to understand how Jsonaut works and how to effectively extend its functionalities.
 
 ### 🛠️ IDEs for Python and Development
 There are many IDEs you can use for Python development. Some of the popular ones are:
