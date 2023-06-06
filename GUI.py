@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout,
 
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QTimer
 from PyQt5 import QtGui
-from PyQt5.QtGui import QTextCursor, QColor, QFont
+from PyQt5.QtGui import QTextCursor, QColor, QFont, QIcon
 import traceback
 import sys
 import os
@@ -22,6 +22,10 @@ from jaccard_index.jaccard import jaccard_index
 
 from collections import deque
 
+
+# Check if the output is redirected
+if hasattr(sys.stdout, 'isatty') and not sys.stdout.isatty():
+    os.environ["COLUMNS"] = "80"  # Set a default console width
 
 def print_caller_name():
     print(f'Called by: {inspect.stack()[1][3]}')
@@ -558,7 +562,6 @@ class JobWidget(QWidget):
 
                     # Use the schema to interpret the line_edit_text
                     param_type = job_schema['params'][label_text]['type']
-                    print(f'{i} :: {param_type}')
                     if param_type == 'list':
                         try:
                             line_edit_text = ast.literal_eval(line_edit_text) if line_edit_text else []
@@ -624,19 +627,19 @@ class JobWidget(QWidget):
                 # Assuming the QLineEdit is at index 1
                 line_edit = layout.itemAt(1).widget()
                 if isinstance(line_edit, QLineEdit):
-                    print("Widget None -> QLineEdit")
                     # Assuming the QLabel is at index 0
                     label_widget = layout.itemAt(0).widget()
                     label_text = self.param_labels[label_widget]  # Get the key from param_labels
                     line_edit_text = line_edit.text()
                     param_type = job_schema['params'][label_text]['type']
                     if param_type == 'dict':
-                        sys.stderr.write(f'DICT FOUND\n')
                         try:
-                            sys.stderr.write(f'{ast.literal_eval(line_edit_text)}\n')
+                            if self.verbose:
+                                sys.stderr.write(f'{ast.literal_eval(line_edit_text)}\n')
                             line_edit_text = ast.literal_eval(line_edit_text) if line_edit_text else {}
                         except (ValueError, SyntaxError):
-                            sys.stderr.write(f'DICT SYNTAX VALUE ERROR\n')
+                            if self.verbose:
+                                sys.stderr.write(f'DICT SYNTAX VALUE ERROR\n')
                             pass  # If it fails, leave it as is (it might be a string representation of a dict)
                     job_dict[label_text] = line_edit_text
 
@@ -685,13 +688,11 @@ class JobWidget(QWidget):
                                         line_edit_text[i] = item.strip('"').strip("'")
                         job_dict[label_text] = line_edit_text
                     elif param_type == 'dict':
-                        sys.stderr.write(f'DICT FOUND2\n')
                         try:
                             line_edit_text = ast.literal_eval(line_edit_text) if line_edit_text else {}
                         except (ValueError, SyntaxError):
                             pass  # If it fails, leave it as is (it might be a string representation of a dict)
                     elif param_type in ['int', 'float', 'num', 'number']:
-                        sys.stderr.write(f'NUM DETECTED TO DICT\n')
                         try:
                             if line_edit_text:  # Only convert if there's something to convert
                                 line_edit_text = float(line_edit_text)
@@ -975,9 +976,11 @@ class JobWidget(QWidget):
 
 
 class BuilderWidget(QWidget):
-    def __init__(self):
+    def __init__(self, exe_mode=False):
         # Call to the parent constructor
         super().__init__()
+
+        self.verbose = True if exe_mode else False
 
         # Create a QVBoxLayout (Vertical Box Layout) and set it as the layout of the current QWidget
         self.main_layout = QVBoxLayout()
@@ -1022,12 +1025,24 @@ class BuilderWidget(QWidget):
         # Load schema
         # `schema` is loaded from the 'job_schema.json' file. It's a list of dictionaries
         # which define the properties and parameters of the different types of jobs
-        with open('job_schema.json') as f:
-            try:
-                self.schema = json.load(f)['job_schema']
-            except Exception as e:
-                sys.stderr.write(f'Json Schema file error: {e}')
-                exit(1)
+        try:
+            with open('job_schema.json') as f:
+                try:
+                    self.schema = json.load(f)['job_schema']
+                except Exception as e:
+                    if self.verbose:
+                        self.showError(f'Json Schema file error: {e}')
+                    exit(1)
+        except FileNotFoundError:
+            self.showError("Error: 'job_schema.json' file not found.")
+            return  # Stop the initialization
+        except json.JSONDecodeError:
+            self.showError("Error: Invalid JSON format in 'job_schema.json'.")
+            return  # Stop the initialization
+        except Exception as e:
+            if self.verbose:
+                self.showError(f'Json Schema file error: {e}')
+            exit(1)
         # `jobs` is a list to hold references to JobWidgets. Each JobWidget represents a job in the UI
         self.jobs = []
 
@@ -1167,7 +1182,8 @@ class BuilderWidget(QWidget):
         # Load the new jobs from the loaded data
         for job_dict in new_jobs_data:
             caller_name = inspect.stack()[1][3]
-            sys.stderr.write(f'Called by: {caller_name}, ADD DICT: {job_dict}\n')
+            if self.verbose:
+                sys.stderr.write(f'Called by: {caller_name}, ADD DICT: {job_dict}\n')
             self.add_job(job_dict)
 
     # This function adds a job, and connects its signals to appropriate slots
@@ -1188,13 +1204,15 @@ class BuilderWidget(QWidget):
         # Create a new JobWidget. If job_dict is provided, the new job will be initialized with
         # this data. The job's number is the current number of jobs plus 1. The parent of the job
         # widget is this BuilderWidget, and the schema and file list are shared among all jobs.
-        sys.stderr.write(f'job dict (add_job): {job_dict}\n')
+        if self.verbose:
+            sys.stderr.write(f'job dict (add_job): {job_dict}\n')
         job_widget = JobWidget(schema=self.schema,
                                job_number=len(self.jobs) + 1,
                                file_list=self.file_list,
                                parent=self,
                                job_dict=job_dict)
-        sys.stderr.write(f'JOB WIDGET to_dict: {job_widget.to_dict()}\n')
+        if self.verbose:
+            sys.stderr.write(f'JOB WIDGET to_dict: {job_widget.to_dict()}\n')
 
         # Add the new job widget to the jobs layout, and add it to the list of jobs.
         self.jobs_layout.addWidget(job_widget)
@@ -1224,9 +1242,11 @@ class BuilderWidget(QWidget):
     def update_jobs_data_from_jobs(self):
         # Loop through each job widget and extract its underlying data using to_dict() function
         caller_name = inspect.stack()[1][3]
-        sys.stderr.write(f'Called by: {caller_name}, before UPDATE self.jobs_data: {self.jobs_data}\n')
+        if self.verbose:
+            sys.stderr.write(f'Called by: {caller_name}, before UPDATE self.jobs_data: {self.jobs_data}\n')
         self.jobs_data = [job.to_dict() for job in self.jobs]  # set underlying jobs_data
-        sys.stderr.write(f'Called by: {caller_name}, after UPDATE self.jobs_data: {self.jobs_data}\n')
+        if self.verbose:
+            sys.stderr.write(f'Called by: {caller_name}, after UPDATE self.jobs_data: {self.jobs_data}\n')
 
     # This function will update the job data in the list when a job's data changes
     def update_job_data(self, job_widget):
@@ -1234,7 +1254,8 @@ class BuilderWidget(QWidget):
             return
         job_index = self.jobs.index(job_widget)
         job_data = job_widget.to_dict()
-        sys.stderr.write(f'UPDATE JSON (to_dict): {job_data}\n')
+        if self.verbose:
+            sys.stderr.write(f'UPDATE JSON (to_dict): {job_data}\n')
         new_jobs_data = self.jobs_data[:]
         new_jobs_data[job_index] = job_data
         self.jobs_data = new_jobs_data  # directly set jobs_data
@@ -1242,7 +1263,8 @@ class BuilderWidget(QWidget):
     def show_jobs_data(self):
         # Create a dictionary with a jobs key, but don't alter self.jobs_data
         jobs_data_dict = {'jobs': convert_numeric_strings(self.jobs_data)}
-        sys.stderr.write(f'SHOW JSON: {jobs_data_dict}\n')
+        if self.verbose:
+            sys.stderr.write(f'SHOW JSON: {jobs_data_dict}\n')
         # Show the dictionary in a custom message box
         dialog = CustomDialog('Current Config JSON', '', self)
         dialog.setDictAsPlainText(jobs_data_dict)
@@ -1277,7 +1299,8 @@ class BuilderWidget(QWidget):
             self.show_success_message()
         except Exception as e:
             QMessageBox.warning(self, 'Warning', f'Failed to write to file: {file_name}\nError: {e}')
-            sys.stderr.write(f'{e}')
+            if self.verbose:
+                sys.stderr.write(f'{e}')
 
     # Save Config As function
     def save_config_as(self):
@@ -1295,8 +1318,15 @@ class BuilderWidget(QWidget):
                 self.show_success_message()
             except Exception as e:
                 QMessageBox.warning(self, 'Warning', f'Failed to write to file: {file_name}\nError: {e}')
-                sys.stderr.write(f'{e}')
+                if self.verbose:
+                    sys.stderr.write(f'{e}')
 
+    def showError(self, message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Error")
+        msg.exec_()
 
 class RunWidget(QWidget):
     def __init__(self, keywords=None, past_lines=3):
@@ -1406,10 +1436,10 @@ class RunWidget(QWidget):
 
         # Add validation for interpreter and selected file
         if not os.path.isfile(interpreter) or not interpreter.lower().endswith(".exe"):
-            print("Invalid interpreter!")
+            self.showError("Invalid interpreter!")
             return
         if not os.path.isfile(selected_file) or not selected_file.lower().endswith(".json"):
-            print("Invalid file!")
+            self.showError("Invalid file!")
             return
 
         self.output_text.clear()
@@ -1488,7 +1518,7 @@ class RunWidget(QWidget):
                 self.output_text.verticalScrollBar().setValue(self.output_text.verticalScrollBar().maximum())
 
         except Exception as e:
-            print(f"Error occurred while appending output line: {str(e)}", file=sys.stderr)
+            self.showError(f"Error occurred while appending output line: {str(e)}")
 
     def stop_command(self):
         if self.process:
@@ -1536,10 +1566,19 @@ class RunWidget(QWidget):
         # Restore the scrollbar position
         self.output_text.verticalScrollBar().setValue(scrollbar_position)
 
+    def showError(self, message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Error")
+        msg.exec_()
 
 class Application(QMainWindow):
-    def __init__(self):
+    def __init__(self, exe_mode=False):
         super().__init__()
+
+        # Set window icon
+        self.setWindowIcon(QIcon('jsonaut.ico'))  # Provide correct path to your .ico file
 
         self.setStyleSheet("""
                     QMainWindow {
@@ -1570,7 +1609,7 @@ class Application(QMainWindow):
                         color: #eff0f1;
                     }
                 """)
-        self.setWindowTitle("JsonMapper")
+        self.setWindowTitle("Jsonaut")
 
         # Create an instance of EmittingStream and hold onto it
         self.emitting_stream = EmittingStream(self)
@@ -1578,7 +1617,7 @@ class Application(QMainWindow):
         # Create the Run and Builder widgets and add them to the stacked widget
         self.run_widget = RunWidget(keywords=['Filter', 'rows', 'scores', 'Calculating'],
                                     past_lines=5)
-        self.builder_widget = BuilderWidget()
+        self.builder_widget = BuilderWidget(exe_mode=exe_mode)
         self.stacked_widget = QStackedWidget()
         self.stacked_widget.addWidget(self.run_widget)
         self.stacked_widget.addWidget(self.builder_widget)
@@ -1600,7 +1639,29 @@ class Application(QMainWindow):
             self.switch_button.setText("Switch to Builder GUI")
 
 
+# Replace sys.stdout and sys.stderr only if we're running as a standalone executable
+exe_mode=False
+if getattr(sys, 'frozen', False):
+    exe_mode=True
+    class FakeStdOut:
+        def write(self, *args, **kwargs):
+            pass
+
+        def flush(self, *args, **kwargs):
+            pass
+
+    sys.stdout = FakeStdOut()
+    sys.stderr = FakeStdOut()
+
 app = QApplication([])
-window = Application()
+window = Application(exe_mode=exe_mode)
 window.show()
-sys.exit(app.exec_())
+
+# Start the event loop
+app.exec_()
+
+# At the end, restore the standard output
+sys.stdout = sys.__stdout__
+
+# Continue with the rest of the code after the event loop exits
+sys.exit()

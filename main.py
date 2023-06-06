@@ -125,7 +125,7 @@ def main():
             csv_output = bulk_rename_csv_headers(input_csv=input_csv,
                                                  rename_obj=rename_obj,
                                                  threshold=sim_thresh)
-            print(f'[+] "bulk_rename_csv", output: {csv_output}')
+            print(f'[+] "rename_columns", output: {csv_output}')
 
         # reformat JSON file
         if job.get("type") == "reformat_json":
@@ -159,6 +159,7 @@ def main():
                                              ignore_new_array_indices=ignore_new_array_indices)
             print(f'[+] "build_json_example", output: {json_output}')
 
+        # TODO not sure if I want this to be an option
         if job.get("type") == "analyze_outputs":
             print_job_start(job_index, total_jobs, job_name, job)
             job_matched = True

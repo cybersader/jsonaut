@@ -1,0 +1,523 @@
+{
+  "job_schema": [
+    {
+      "type": "rename_columns",
+      "default_name": "rename_columns",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "rename_obj": {
+          "type": "dict",
+          "options": {
+            "keys": "old column names (exact matches)",
+            "values": "new column names (exact matches)"
+          }
+        },
+        "similarity_threshold": {
+          "type": "float"
+        }
+      },
+      "output_prepends": "{input_csv_name}_renamed__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "search_and_flatten_csv",
+      "default_name": "search_and_flatten_csv",
+      "input_param": "search_config_path",
+      "input_match": ".+\\.json$",
+      "params": {
+        "search_config_path": {
+          "type": "file"
+        },
+        "searchconfigs": {
+          "type": "dict",
+          "options": {
+            "keys": "needs to match keys from the \"search_config_path\" file. These are configurations for search and flatten jobs.  { \"key (search config 1)\":\"input_json_file_1\",  \"key (search config 2)\":\"input_json_file_2\" }",
+            "values": "the relative path of the input json file for that particular search_and_flatten config"
+          }
+        },
+        "delimiter": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "num_test_rows": {
+          "type": "int"
+        },
+        "verbose": {
+          "type": "bool"
+        }
+      },
+      "output_prepends": "flattened__<filenames from 'searchconfigs' (above) >  IGNORE THIS-- >",
+      "output_ext": "json"
+    },
+    {
+      "type": "reformat_json",
+      "default_name": "reformat_json",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "input_json": {
+          "type": "file"
+        }
+      },
+      "output_prepends": "reformatted__",
+      "output_ext": "json"
+    },
+    {
+      "type": "build_json_example",
+      "default_name": "build_schema",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "root_key": {
+          "type": "file"
+        },
+        "input_json": {
+          "type": "file"
+        },
+        "ignore_new_array_indices": {
+          "type": "bool"
+        }
+      },
+      "output_prepends": "build_example_json__",
+      "output_ext": "json"
+    },
+    {
+      "type": "analyze_outputs",
+      "default_name": "analyze_outputs",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        }
+      },
+      "output_prepends": "csv_analytics_{datetime_str}.csv",
+      "output_ext": "csv"
+    },
+    {
+      "type": "trim_json",
+      "default_name": "trim_json",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "root_key": {
+          "type": "string"
+        },
+        "input_json": {
+          "type": "file"
+        },
+        "range": {
+          "type": "string"
+        }
+      },
+      "output_prepends": "trimmed_json__",
+      "output_ext": "json"
+    },
+    {
+      "type": "truncate_json",
+      "default_name": "truncate_json",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "input_json": {
+          "type": "file"
+        },
+        "depth": {
+          "type": "int"
+        }
+      },
+      "output_prepends": "renamed__",
+      "output_ext": "json"
+    },
+    {
+      "type": "collapse_json",
+      "default_name": "collapse_json",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "root_key": {
+          "type": "string"
+        },
+        "depth": {
+          "type": "int"
+        }
+      },
+      "output_prepends": "collapse__",
+      "output_ext": "json"
+    },
+    {
+      "type": "get_flattened_headers",
+      "default_name": "get_flattened_headers",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "input_json": {
+          "type": "file"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "num_test_rows": {
+          "type": "int"
+        },
+        "separator": {
+          "type": "string"
+        }
+      },
+      "output_prepends": "headers__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "get_unique_values",
+      "default_name": "get_unique_values",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "column_names": {
+          "type": "list"
+        }
+      },
+      "output_prepends": "uniq_vals__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "get_column_analytics",
+      "default_name": "get_column_analytics",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        }
+      },
+      "output_prepends": "col_analysis__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "custom_filter",
+      "default_name": "custom_filter",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "filter_config": {
+          "type": "dict",
+          "options": {
+            "keys": "exact column names",
+            "sub keys": "options for filtering with each column",
+            "sub keys (priority)": "weight for that particular column (how much it matters in the filter)",
+            "sub keys (order)": "\"asc\" or \"desc\".  \"asc\" -- the range gets sorted first to last.  \"desc\" -- range gets sorted last to first",
+            "sub keys (range)": "list type.  Can be a range of strings like -> [\"column_name_1\", \"column_name_2\"] OR it can be an integer or float range like -> [0.1, 10.1] OR [10, 0]",
+            "sub keys (if_empty)": "score that is given to the row if this column is empty",
+            "sub keys (if_not_in_range)": "score that is given if the column values don't fall into the range.",
+            "sub keys (drop_zero)": "options for filtering with each column"
+          },
+          "default": {
+            "column_name_here": {
+              "priority": "(number here -- depends on numbers of other column names and affects the score)",
+              "order": "\"asc\" or \"desc\" -- depends on the order of items or a range of numbers in the \"range\" key",
+              "range": "range of strings [\"A\",\"B\",\"C\"] OR numbers like [0,10]",
+              "if_empty": "number for score if value for the column_name is empty/null (use 0 then drop_zero to true to drop rows with empty values in this column",
+              "if_not_in_range": "number for score if the value for the column_name doesn't fall in the number range or isn't one of the strings (if a string range).  Use 0 then drop_zero to true to drop rows that have values that don't fall in the range.",
+              "drop_zero": "\"true\" or \"false\""
+            }
+          }
+        },
+        "drop_score": {
+          "type": "bool"
+        },
+        "score_breakdown": {
+          "type": "bool"
+        },
+        "drop_below": {
+          "type": "int"
+        }
+      },
+      "output_prepends": "custom_filtered__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "join_csvs",
+      "default_name": "join_csvs",
+      "input_param": "left_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "left_csv": {
+          "type": "file"
+        },
+        "right_csv": {
+          "type": "file"
+        },
+        "left_on": {
+          "type": "string"
+        },
+        "right_on": {
+          "type": "string"
+        },
+        "join_type": {
+          "type": "string"
+        },
+        "suffixes": {
+          "type": "list"
+        },
+        "chunksize": {
+          "type": "int"
+        }
+      },
+      "output_prepends": "joined__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "extract_business_units",
+      "default_name": "extract_business_units",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        }
+      },
+      "output_prepends": "withunits__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "remap_values_in_csv",
+      "default_name": "remap_values_in_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "remap_dict": {
+          "type": "dict",
+          "options": {
+            "keys": "put values here that appear in that column which you want to automatically change into another value -- usually this is when you want to convert certain words or categories into a number.",
+            "values": "value for the found key to be converted to"
+          }
+        }
+      },
+      "output_prepends": "remapped__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "rename_csv",
+      "default_name": "rename_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "output_name": {
+          "type": "string"
+        }
+      },
+      "output_prepends": "renamed__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "get_ip_keys",
+      "default_name": "get_ip_keys",
+      "input_param": "input_json",
+      "input_match": ".+\\.json$",
+      "params": {
+        "input_json": {
+          "type": "file"
+        }
+      },
+      "output_prepends": "( \"potential_JSON_IP_keys.json\" ) ignore this -->",
+      "output_ext": "json"
+    },
+    {
+      "type": "extract_first_value_from_lists",
+      "default_name": "extract_first_value_from_lists",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "columns": {
+          "type": "list"
+        },
+        "replace_old_column": {
+          "type": "bool"
+        }
+      },
+      "output_prepends": "list_extr__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "select_columns_from_csv",
+      "default_name": "select_columns_from_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "columns": {
+          "type": "list"
+        }
+      },
+      "output_prepends": "col_clip__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "fill_empty_values_in_csv",
+      "default_name": "fill_empty_values_in_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "fill_values_dict": {
+          "type": "dict",
+          "options": {
+            "keys": "put the column name to detect empty values for and fill",
+            "values": "choose the default value to fill empty instances with"
+          }
+        }
+      },
+      "output_prepends": "filled__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "remove_rows_with_empty_values",
+      "default_name": "remove_rows_with_empty_values",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "columns": {
+          "type": "list"
+        }
+      },
+      "output_prepends": "no_empty__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "format_datetime_columns_in_csv",
+      "default_name": "format_datetime_columns_in_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "columns": {
+          "type": "list"
+        },
+        "replace_old_column": {
+          "type": "bool"
+        }
+      },
+      "output_prepends": "formatted_datetime__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "transform_columns_in_csv",
+      "default_name": "transform_columns_in_csv",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "transformations": {
+          "type": "dict",
+          "options": {
+            "keys": "exact column names",
+            "values": "for values you can use anything you can with a lambda function (as a string) and use the syntax --> row['column_name_here'] to refer to certain column's values per row.  This is applied per row to every row. "
+          },
+          "default": {
+            "exact column name here": "combine column names using the syntax --> row['column_name_here']  ..AND use anything that you can from within a lambda function"
+          }
+        }
+      },
+      "output_prepends": "transformed__",
+      "output_ext": "csv"
+    },
+    {
+      "type": "bulk_value_search",
+      "default_name": "bulk_value_search",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "search": {
+          "type": "list"
+        },
+        "value_limit": {
+          "type": "int"
+        }
+      },
+      "output_prepends": "(use above 'output_name') IGNORE -- > ",
+      "output_ext": "json"
+    },
+    {
+      "type": "pivot_table",
+      "default_name": "pivot_table",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "index_cols": {
+          "type": "list"
+        },
+        "pivot_cols": {
+          "type": "list"
+        },
+        "value_cols": {
+          "type": "list"
+        },
+        "aggfunc": {
+          "type": "string"
+        }
+      },
+      "output_prepends": "pivot__",
+      "output_ext": "csv"
+    },
+	{
+      "type": "process_csv_remove_parentheses",
+      "default_name": "process_csv_remove_parentheses",
+      "input_param": "input_csv",
+      "input_match": ".+\\.csv$",
+      "params": {
+        "input_csv": {
+          "type": "file"
+        },
+        "columns": {
+          "type": "list"
+        },
+		"edit_in_place": {
+		  "type": "bool"
+		}
+      },
+      "output_prepends": "no_parentheses__",
+      "output_ext": "csv"
+    }
+  ]
+}

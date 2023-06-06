@@ -6,7 +6,8 @@ config__*
 
 # Ignore most JSON files
 *.json
-!config.json
+!job_schema.json
+!jsonaut_configs_examples.json
 
 # Ignore specific files
 
