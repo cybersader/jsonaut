@@ -114,6 +114,8 @@ Before installing Jsonaut, you need to ensure that you have the following prereq
 4.  **Use the pre-built executable:** If you have downloaded the executable from the Releases section, you can just run it directly. No installation or Python environment setup is needed.
 
 # Usage
+  
+## Running Python Jobs
 **Jsonaut** is flexible and can be used in different scenarios depending on your specific requirements. Here are some typical use cases:
 #### 1\. Running Predefined Jobs with the GUI 🖥️
 
@@ -139,6 +141,8 @@ For advanced users who wish to extend Jsonaut with their own transformations or 
 -   Run your transformations through the Jsonaut system by either using the GUI or the command line.
 
 Remember to consult the detailed documentation and examples provided to understand how Jsonaut works and how to effectively extend its functionalities.
+
+## Developing Python Jobs
 
 ### 🛠️ IDEs for Python and Development
 There are many IDEs you can use for Python development. Some of the popular ones are:
