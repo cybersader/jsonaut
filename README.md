@@ -116,9 +116,12 @@ Before installing Jsonaut, you need to ensure that you have the following prereq
 # Usage
 **Jsonaut** is flexible and can be used in different scenarios depending on your specific requirements. Here are some typical use cases:
 #### 1\. Running Predefined Jobs with the GUI 🖥️
-If you simply want to execute predefined jobs and enjoy a user-friendly interface, Jsonaut's GUI is your best option. In this case, you don't need to touch any Python code or even have Python installed.
--   If you've built or downloaded the **Jsonaut executable**, just run it directly. No installation or Python environment setup is needed.
--   Alternatively, you can **download the project** and run the `GUI.py` file in your Python environment.
+
+To execute predefined jobs using the Jsonaut GUI, you will require a Python interpreter. Here are the ways to proceed based on your setup:
+-   **Python Installed:** If you already have Python installed on your machine, Jsonaut will automatically utilize the installed Python interpreter. Simply download the ready-to-use Jsonaut executable from the [Releases](https://github.com/cybersader/jsonaut/releases) section. This standalone executable doesn't require additional installations. Just run it, and the Jsonaut GUI will spring up!
+-   **No Python Installed:** If you don't have Python installed, you'll need to select a Python interpreter executable when you run Jsonaut. This could be a standalone Python interpreter executable that you have downloaded separately. You can download the official Python interpreter executable from the [Python Downloads](https://www.python.org/downloads/) page.    
+-   **Running from Source Code:** Another option is to run the GUI directly from the source code. Clone or download the project and run the `GUI.py` file in your Python environment.   
+Remember that for all these options, you'll need to have the job definitions you want to run available in the correct JSON format. Use one of the recommended JSON editors to make this process easier. Happy running! 👍
 
 #### 2\. Running Jobs from the Command Line 📜
 For those who prefer a command line interface or need to integrate Jsonaut into other scripts or workflows, you can directly use Jsonaut's main functionality from the command line.
