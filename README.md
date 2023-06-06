@@ -107,7 +107,7 @@ Before installing Jsonaut, you need to ensure that you have the following prereq
     ```
 
 ### Setting up Jsonaut
-####There are 4 ways to setup and use Jsonaut (Look at below Usage section for more detail):
+#### There are 4 ways to setup and use Jsonaut (Look at below Usage section for more detail):
 1.  **Run the GUI.py file:** If you want to use Jsonaut's GUI, you can just run the `GUI.py` file in your Python environment.
 2.  **Run main.py with config files:** If you prefer using the CLI, you can run Jsonaut's main functionality with the command: `python main.py --config "config__<text>.json"`. Replace `<text>` with your desired configuration.
 3.  **Build the executable using setup.py:** If you want to build the Jsonaut executable, you can use the `setup.py` script. Running `python setup.py` will build the executable. If you want to run Jsonaut after building, use `python setup.py --run`.
