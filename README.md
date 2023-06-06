@@ -23,7 +23,7 @@ The Run GUI is your command center for executing jobs based on the JSON files yo
 
 To use the Run GUI:
 1. Launch Jsonaut, ensuring you are in 'Run GUI' mode.
-2. Load the JSON configuration file you wish to execute.
+2. Load the JSON jobs configuration file you wish to execute.  Look at [Adding Jobs to the Code](#adding-jobs-to-the-code) section for making your own Python jobs. 
 3. Hit the 'Run' button and watch your job progress to completion!
 
 ### Builder GUI (Alpha) 🚧
@@ -178,7 +178,9 @@ If the Builder GUI does not support a specific feature you need, you can [manual
 -   [Code Beautify JSON Editor](https://codebeautify.org/jsonviewer): A versatile tool that allows you to view, edit, and format JSON. It also has functionality to convert between JSON and other data formats.
 -   [JSON Formatter & Editor](https://jsonformatter.org/): This online tool helps to format, validate, save, share, and edit JSON data.
 
-### Configuring JSON Files
+## Adding Jobs to the Code 🤩🐍
+
+### Making JSON Job Config Files
 Jsonaut leverages JSON files to define jobs and their parameters. An example of a simple configuration JSON file is:
 ```
 {
@@ -198,7 +200,8 @@ Required fields in a `job` object:
 - `name` - recognizable name for that step/job
 - `type` - how Jsonaut runs the applicable function (checks job type in main.py)
 
-## Adding Jobs to the Code 🤩🐍
+### Adding Jobs Example
+
 When adding new jobs to the code in `main.py`, you will need to handle each job's parameters individually. You can use the `get` method on the job dictionary object to fetch these parameters. `get` is a safer way to access a dictionary's value since it won't cause an error if the key doesn't exist; it will simply return `None`.
 
 First, let's define a new function in a new Python file that performs a specific job. This function takes parameters that configure how the job should be done. Here's an example:
