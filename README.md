@@ -23,7 +23,7 @@ The Run GUI is your command center for executing jobs based on the JSON files yo
 
 To use the Run GUI:
 1. Launch Jsonaut, ensuring you are in 'Run GUI' mode.
-2. Load the JSON jobs configuration file you wish to execute.  Look at [Adding Jobs to the Code](#adding-jobs-to-the-code🤩🐍) section for making your own Python jobs. 
+2. Load the JSON jobs configuration file you wish to execute.  Look at [Adding Jobs to the Code](#adding-jobs-to-the-code-) section for making your own Python jobs. 
 3. Hit the 'Run' button and watch your job progress to completion!
 
 ### Builder GUI (Alpha) 🚧
@@ -161,7 +161,7 @@ There are many IDEs you can use for Python development. Some of the popular ones
 Select an IDE that suits your preference and comfort level. Each of these IDEs supports Python and should work with Jsonaut.
 
 #### Manual JSON Configuration for Jobs
-If the Builder GUI does not support a specific feature you need, you can [manually edit the JSON configuration files](#configuring-json-files). The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `job_schema.json` file unless you want to use the job with the Builder GUI.
+If the Builder GUI does not support a specific feature you need, you can [manually edit the JSON configuration files](#configuring-json-files-). The structure of the JSON files is intuitive, and you can use any text editor for this purpose. When creating a new job, you don't need to add it to the `job_schema.json` file unless you want to use the job with the Builder GUI.
 
 ##### Local Editors:
   -   [Visual Studio Code](https://code.visualstudio.com/): This is a feature-rich code editor that can handle JSON files with ease. It offers IntelliSense for auto-completing code and providing helpful information, as well as built-in Git commands. It also supports a wide array of plugins for enhancing functionality.
