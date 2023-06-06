@@ -253,31 +253,31 @@ You can add the new job in the config JSON file:
 ```
 
 ## Updating the Job Schema ⚠(only if you use the Builder GUI)
-The job_schema.json file is a crucial part of the configuration, as it defines the structure and parameters for each job. Let's look at how we can add and modify job definitions in this file.
+The `job_schema.json` file is a crucial part of the configuration, as it defines the structure and parameters for each job. Let's look at how we can add and modify job definitions in this file.
+  
+Each job in the `job_schema.json` file is defined as a JSON object in the `job_schema` array. Every job object should have the following properties:
+-   `type`: This is the name of the job, which should match the function name in your code.
+-   `default_name`: A friendly name for the job that gets filled in the builder widget when the job is selected.
+-   `input_param`: The main input parameter for the job. This tells the builder widget which parameter is the primary one.
+-   `input_match`: A regular expression that validates the type of file that can match the `input_param`.
+-   `params`: An object that describes each parameter that the job requires. This is a key component of the job schema.
 
-Each job in the job_schema.json file is defined as a JSON object in the job_schema array. Every job object should have the following properties:
+The `params` object in turn consists of the following properties for each parameter:
+-   `type`: Specifies the data type of the parameter. It can be `file`, `list`, `dict`, `int`, `float`, `num`, or `number`.
 
-type: This is the name of the job, which should match the function name in your code.
-default_name: A friendly name for the job that gets filled in the builder widget when the job is selected.
-input_param: The main input parameter for the job. This tells the builder widget which parameter is the primary one.
-input_match: A regular expression that validates the type of file that can match the input_param.
-params: An object that describes each parameter that the job requires. This is a key component of the job schema.
-The params object in turn consists of the following properties for each parameter:
+For parameters of `dict` type, there are a couple of additional properties:
+-   `options`: Descriptions for the keys in the dictionary. These descriptions are displayed when editing the object in the Builder.
+-   `default`: The default value for the parameter. This is the value that gets loaded into the Builder when the job type is selected.
 
-type: Specifies the data type of the parameter. It can be file, list, dict, int, float, num, or number.
-For parameters of dict type, there are a couple of additional properties:
-
-options: Descriptions for the keys in the dictionary. These descriptions are displayed when editing the object in the Builder.
-default: The default value for the parameter. This is the value that gets loaded into the Builder when the job type is selected.
 And finally, every job object also has:
+-   `output_prepends`: A string that gets prepended to the output filename.
+-   `output_ext`: The extension of the output file.
 
-output_prepends: A string that gets prepended to the output filename.
-output_ext: The extension of the output file.
-Remember, when adding a new job or modifying an existing one, the type in the job_schema.json file should match the function name in your code, and the parameter names in the params object should match the parameters in your function definition.
+Remember, when adding a new job or modifying an existing one, the `type` in the `job_schema.json` file should match the function name in your code, and the parameter names in the `params` object should match the parameters in your function definition.
 
-After updating the job_schema.json file, you can then use the updated schema in the JSON config file to define and configure the jobs that should be executed.
+After updating the `job_schema.json` file, you can then use the updated schema in the JSON config file to define and configure the jobs that should be executed.
 
-Here's an example of how a job object might look in the job_schema.json file:
+Here's an example of how a job object might look in the `job_schema.json` file:
 ```
 {
   "type": "rename_columns",
