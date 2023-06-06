@@ -23,7 +23,7 @@ The Run GUI is your command center for executing jobs based on the JSON files yo
 
 To use the Run GUI:
 1. Launch Jsonaut, ensuring you are in 'Run GUI' mode.
-2. Load the JSON jobs configuration file you wish to execute.  Look at [Adding Jobs to the Code](#adding-jobs-to-the-code) section for making your own Python jobs. 
+2. Load the JSON jobs configuration file you wish to execute.  Look at [Adding Jobs to the Code](#adding-jobs-to-the-code🤩🐍) section for making your own Python jobs. 
 3. Hit the 'Run' button and watch your job progress to completion!
 
 ### Builder GUI (Alpha) 🚧
