@@ -19,7 +19,7 @@
 
 The Run GUI is your command center for executing jobs based on the JSON files you've created. This powerful interface puts control in your hands, with clear indicators for job status and progress.
 
-![jsonaut_yw3AwANiNb](https://github.com/cybersader/jsonaut/assets/106132469/64ff9b59-1885-44cb-b2ef-6a93fd277b49)
+![jsonaut_Lef7SnXuZD](https://github.com/cybersader/jsonaut/assets/106132469/972ea1ce-b72a-4290-a3a8-fd9d4cdf88d1)
 
 To use the Run GUI:
 1. Launch Jsonaut, ensuring you are in 'Run GUI' mode.
