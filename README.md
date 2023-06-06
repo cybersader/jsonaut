@@ -252,7 +252,7 @@ You can add the new job in the config JSON file:
 }
 ```
 
-## Updating the Job Schema ⚠(only if you use the Builder GUI)
+## Updating the Job Schema ⚠(only if you use the Builder GUI)(STILL IN ALPHA)
 The `job_schema.json` file is a crucial part of the configuration, as it defines the structure and parameters for each job. Let's look at how we can add and modify job definitions in this file.
   
 Each job in the `job_schema.json` file is defined as a JSON object in the `job_schema` array. Every job object should have the following properties:
