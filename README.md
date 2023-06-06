@@ -211,7 +211,7 @@ When adding new jobs to the code in `main.py`, you will need to handle each job'
 
 First, let's define a new function in a new Python file that performs a specific job. This function takes parameters that configure how the job should be done. Here's an example:
 ```
-# File: my_jobs.py (Jsonaut uses utils.py, but you can use whatever you want)
+# File: my_jobs.py (Jsonaut currently stores its functions utils.py, but you can use whatever you want)
 
 def my_new_job(input_csv, column_name, new_value):
     # logic to read CSV, change a specific column's value to 'new_value', and save the file.
@@ -224,6 +224,9 @@ After creating your function in a separate file, you can import it to `main.py` 
 
 # import your function
 from my_jobs import my_new_job
+  
+# (if you coded it in utils.py) import your function like
+from utils import my_new_job
 
 # ...
 
@@ -235,7 +238,7 @@ for job_index, job in enumerate(jobs):
 
     job_matched = False
 
-    if job.get("type") == "my_new_job":
+    if job.get("type") == "my_new_job_type":
         input_csv = job.get("input_csv")
         column_name = job.get("column_name")
         new_value = job.get("new_value")
@@ -251,10 +254,10 @@ You can add the new job in the config JSON file:
     "jobs": [
         {
             "name": "my_new_job_1",
-            "type": "my_new_job",
-            "input_csv": "example.csv",
-            "column_name": "asset_category",
-            "new_value": "new_category"
+            "type": "my_new_job_type",
+            "input_csv": "example.csv",         # attached to main (above) via 'input_csv = job.get("input_csv")'
+            "column_name": "asset_category",    # attached to main (above) via 'column_name = job.get("column_name")'
+            "new_value": "new_category"         # attached to main (above) via 'new_value = job.get("new_value")'
         }
     ]
 }
