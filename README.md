@@ -20,7 +20,7 @@
 3. [Configure a jobs file -- runs your Python functions](#adding-jobs-example)
 4. [Run it!](#running-python-jobs) (GUI, programmatically, using `pyton main.py --config <some_jobs_file.json>)
 
-‼**Check out the [wiki docs](https://github.com/cybersader/jsonaut/wiki) for premade functions (including `search_and_flatten`)**
+‼ Check out the [**WIKI DOCS**](https://github.com/cybersader/jsonaut/wiki) for **premade functions** (including `search_and_flatten`)
 
 ### Run GUI
 
