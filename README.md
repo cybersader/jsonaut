@@ -237,7 +237,7 @@ from utils import my_new_job
 
 # inside main() function
 
-# where the jobs are attached to jsonaut
+# where the jobs are attached to jsonaut ( Ctrl + F the below line in main.py to find it )
 for job_index, job in enumerate(jobs):
     job_name = job.get("name")
 
