@@ -207,6 +207,9 @@ Required fields in a `job` object:
 - `name` - recognizable name for that step/job
 - `type` - how Jsonaut runs the applicable function (checks job type in main.py)
 
+#### Naming the Job Config File
+‼**prepend "config__" to the front so the "Run" GUI automatically detects it**
+
 ### Adding Jobs Example
 
 When adding new jobs to the code in `main.py`, you will need to handle each job's parameters individually. You can use the `get` method on the job dictionary object to fetch these parameters. `get` is a safer way to access a dictionary's value since it won't cause an error if the key doesn't exist; it will simply return `None`.
