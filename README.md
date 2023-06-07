@@ -16,7 +16,7 @@
 <!-- Screenshots and Gifs -->
 ### How to use Jsonaut
 1. [Code some Python](#make-your-own-python-jobs--) (or use premade functions) 🐍
-2. [Attach it to `main.py`](#adding-jobs-example)
+2. [Attach your created functions to `main.py`](#adding-jobs-example)
 3. [Configure a jobs file -- runs your Python functions](#adding-jobs-example)
 4. [Run it!](#running-python-jobs) (GUI, programmatically, using `pyton main.py --config <some_jobs_file.json>)
 
