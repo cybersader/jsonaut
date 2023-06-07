@@ -1,210 +1,244 @@
 {
-    "jobs": [
-        {
-            "type": "search_and_flatten_csv",
-            "name": "search_and_flatten_csv",
-            "search_config_path": "searches.json",
-            "searchconfigs": {
-                "search_key_from_search_config_path": "example1.json (input file to apply search to)",
-                "search_key_from_search_config_path": "example2.json (input file to apply search to)"
-            },
-            "delimiter": ",",
-            "mode": "normal",
-            "num_test_rows": 100,
-            "verbose": false
+  "jobs": [
+    {
+      "type": "search_and_flatten_csv",
+      "name": "search_and_flatten_csv",
+      "search_config_path": "searches.json",
+      "searchconfigs": {
+        "search_key_from_search_config_path1": "example1.json (input file to apply search to)",
+        "search_key_from_search_config_path2": "example2.json (input file to apply search to)"
+      },
+      "delimiter": ",",
+      "mode": "normal",
+      "num_test_rows": 100,
+      "verbose": false
+    },
+    {
+      "name": "rename_columns",
+      "type": "rename_columns",
+      "input_csv": "example.csv (file to rename columns for)",
+      "similarity_threshold": "0.1-1.0 (uses jaccard similarity to find similar column names when searching for renaming -- i.e they don't need to be exact matches)",
+      "rename_obj": {
+        "old_column_name": "new_column_name"
+      }
+    },
+    {
+      "name": "reformat_json",
+      "type": "reformat_json",
+      "input_json": "not_pretty__unformatted.json"
+    },
+    {
+      "name": "build_json_example",
+      "type": "build_json_example",
+      "root_key": "<root key - one object (one row) or list of objects to aggregate possible keys for>",
+      "input_json": "example.json",
+      "ignore_new_array_indices": true
+    },
+    {
+      "name": "trim_json",
+      "type": "trim_json",
+      "root_key": "<root key - one object (one row) or list of objects to aggregate possible keys for>",
+      "input_json": "cves_xUHL7tJeJZbE9mwvN9n23yzPthCFx9-QvK05If4-NDc.json",
+      "range": "which range of objects to trim to from JSON (example: '119750-19759')"
+    },
+    {
+      "name": "truncate_json",
+      "type": "truncate_json",
+      "input_json": "example.json (json file that you want to truncate - only show down to a certain depth)",
+      "depth": 1
+    },
+    {
+      "name": "collapse_json",
+      "type": "collapse_json",
+      "input_json": "example.json (json file that you want to truncate - collapse down to a certain depth -- this means that the number of underlying items in the list or object value will be shown)",
+      "depth": 1
+    },
+    {
+      "name": "get_flattened_headers",
+      "type": "get_flattened_headers",
+      "input_json": "example.json (JSON file to pull out all keys from at all depths)",
+      "mode": "normal (set to 'test') to only try the first so many rows for large JSON files",
+      "num_test_rows": 1000
+    },
+    {
+      "name": "get_unique_values",
+      "type": "get_unique_values",
+      "input_csv": "example.json (JSON file to pull out all keys from at all depths)",
+      "column_names": [
+        "column to get all unique values for",
+        "another column"
+      ]
+    },
+    {
+      "type": "get_column_analytics",
+      "name": "get_column_analytics",
+      "input_csv": "example.csv (super useful function -- edit this function to add more data points)"
+    },
+    {
+      "name": "custom_filter",
+      "type": "custom_filter",
+      "input_csv": "example.csv",
+      "row_limit": 1000000,
+      "filter_config": {
+        "column_name1": {
+          "priority": 2,
+          "order": "desc",
+          "range": [
+            0,
+            10
+          ],
+          "if_empty": 0,
+          "if_not_in_range": 0,
+          "drop_zero": false
         },
-		{
-			"name":"rename_columns",
-			"type":"rename_columns",
-			"input_csv":"example.csv (file to rename columns for)",
-			"similarity_threshold": "0.1-1.0 (uses jaccard similarity to find similar column names when searching for renaming -- i.e they don't need to be exact matches)",
-			"rename_obj": {
-				"old_column_name":"new_column_name"
-			}
-		},
-		{
-			"name":"reformat_json",
-			"type":"reformat_json",
-			"input_json":"not_pretty__unformatted.json"
-		},
-		{
-			"name":"build_json_example",
-			"type":"build_json_example",
-			"root_key":"<root key - one object (one row) or list of objects to aggregate possible keys for>",
-			"input_json":"example.json",
-			"ignore_new_array_indices":true
-		},
-		{
-			"name":"trim_json",
-			"type":"trim_json",
-			"root_key":"<root key - one object (one row) or list of objects to aggregate possible keys for>",
-			"input_json":"cves_xUHL7tJeJZbE9mwvN9n23yzPthCFx9-QvK05If4-NDc.json",
-			"range":"which range of objects to trim to from JSON (example: '119750-19759')"
-		},
-		{
-			"name":"truncate_json",
-			"type":"truncate_json",
-			"input_json":"example.json (json file that you want to truncate - only show down to a certain depth)",
-			"depth":1
-		},
-		{
-			"name":"collapse_json",
-			"type":"collapse_json",
-			"input_json":"example.json (json file that you want to truncate - collapse down to a certain depth -- this means that the number of underlying items in the list or object value will be shown)",
-			"depth":1
-		},
-		{
-			"name":"get_flattened_headers",
-			"type":"get_flattened_headers",
-			"input_json":"example.json (JSON file to pull out all keys from at all depths)",
-			"mode":"normal (set to 'test') to only try the first so many rows for large JSON files",
-			"num_test_rows":1000
-		},
-		{
-			"name":"get_unique_values",
-			"type":"get_unique_values",
-			"input_csv":"example.json (JSON file to pull out all keys from at all depths)",
-			"column_names":["column to get all unique values for", "another column"],
-		},
-		{
-            "type": "get_column_analytics",
-            "name": "get_column_analytics",
-            "input_csv": "example.csv (super useful function -- edit this function to add more data points)"
-        },
-		{
-			"name":"custom_filter",
-			"type":"custom_filter",
-			"input_csv":"example.csv",
-			"row_limit":1000000,
-			"filter_config":{
-				"column_name1": {
-					"priority": 2,
-					"order": "desc",
-					"range": [0,10],
-					"if_empty": 0,
-					"if_not_in_range": 0,
-					"drop_zero":false
-				},
-				"column_name2": {
-					"priority": 2,
-					"order": "desc",
-					"range": ["value1","value2"],
-					"if_empty": 0,
-					"if_not_in_range": 0,
-					"drop_zero":true
-				}
-			},
-			"drop_score":true,
-			"score_breakdown":false,
-			"drop_below": 0
-		},
-		{
-			"name":"join_csvs",
-			"type":"join_csvs",
-			"left_csv":"example_left.csv",
-			"right_csv":"example_right.csv",
-			"left_on":"column_name_1",
-			"right_on":"column_name_1",
-			"join_type":"inner",
-			"suffixes":["",""],
-			"chunksize":10000
-		},
-		{
-			"name":"extract_business_units",
-			"type":"extract_business_units",
-			"input_csv":"example.csv"
-		},
-		{
-			"name":"remap_values_in_csv",
-			"type":"remap_values_in_csv",
-			"input_csv":"example.csv",
-			"remap_dict":{
-				"column_name_to_remap_here":{
-					"critical":10,
-					"high": 8,
-					"medium":5.5,
-					"low":3,
-					"informational":1
-				}
-			}
-		},
-		{
-			"name":"rename_csv",
-			"type":"rename_csv",
-			"input_csv":"example.csv",
-			"output_name":"new_name_example"
-		},
-		{
-			"name":"get_ip_keys",
-			"type":"get_ip_keys",
-			"input_json":"example.json (find all keys that have IP addresses for values)"
-		},
-		{
-			"name":"extract_first_value_from_lists",
-			"type":"extract_first_value_from_lists",
-			"input_csv":"example.csv",
-			"columns":["column_name_to_turn_into_string_of_first_item_in_list"],
-			"replace_old_column":false
-		},
-		{
-			"name":"select_columns_from_csv",
-			"type":"select_columns_from_csv",
-			"input_csv":"example.csv",
-			"columns": ["column_name1","column_name2"]
-		},
-		}
-			"name":"fill_empty_values_in_csv",
-			"type":"fill_empty_values_in_csv",
-			"input_csv":"example.csv",
-			"fill_values_dict": {
-				"column_name":"value_to_fill_empty_values_with"
-			}
-		},
-		{
-			"name":"remove_rows_with_empty_values",
-			"type":"remove_rows_with_empty_values",
-			"input_csv":"example.csv",
-			"columns": ["column_name1","column_name2"]
-		},
-		{
-			"name":"format_datetime_columns_in_csv",
-			"type":"format_datetime_columns_in_csv",
-			"input_csv":"example.csv",
-			"columns":["state.last_seen"],
-			"replace_old_column":false
-		},
-		{
-			"name":"transform_columns_in_csv",
-			"type":"transform_columns_in_csv",
-			"input_csv":"example.csv",
-			"transformations":{
-				"column_to_be_created": "row['column_name1'] + '; ' + row['column_name2']"
-			}
-		},
-		{
-			"name":"bulk_value_search",
-			"type":"bulk_value_search",
-			"input_csv":"example.csv",
-			"search": ["value_1","value_2"],
-			"truncation_limit": 32000
-		},
-		{
-		  "name": "pivot_table",
-		  "type": "pivot_table",
-		  "input_csv": "example.csv",
-		  "index_cols": ["column_1", "column_2"],
-		  "pivot_cols": "",
-		  "value_cols": ["column_3"],
-		  "group_by_cols": ["column_3"],
-		  "group_by": true,
-		  "aggfunc": "count"
-		},
-		{
-			"name":"process_csv_remove_parentheses",
-			"type":"process_csv_remove_parentheses",
-			"input_csv":"example.csv",
-			"columns": ["column_with_parentheses_at_the_end"],
-			"edit_in_place": false
-		},
-    ]
+        "column_name2": {
+          "priority": 2,
+          "order": "desc",
+          "range": [
+            "value1",
+            "value2"
+          ],
+          "if_empty": 0,
+          "if_not_in_range": 0,
+          "drop_zero": true
+        }
+      },
+      "drop_score": true,
+      "score_breakdown": false,
+      "drop_below": 0
+    },
+    {
+      "name": "join_csvs",
+      "type": "join_csvs",
+      "left_csv": "example_left.csv",
+      "right_csv": "example_right.csv",
+      "left_on": "column_name_1",
+      "right_on": "column_name_1",
+      "join_type": "inner",
+      "suffixes": [
+        "",
+        ""
+      ],
+      "chunksize": 10000
+    },
+    {
+      "name": "extract_business_units",
+      "type": "extract_business_units",
+      "input_csv": "example.csv"
+    },
+    {
+      "name": "remap_values_in_csv",
+      "type": "remap_values_in_csv",
+      "input_csv": "example.csv",
+      "remap_dict": {
+        "column_name_to_remap_here": {
+          "critical": 10,
+          "high": 8,
+          "medium": 5.5,
+          "low": 3,
+          "informational": 1
+        }
+      }
+    },
+    {
+      "name": "rename_csv",
+      "type": "rename_csv",
+      "input_csv": "example.csv",
+      "output_name": "new_name_example"
+    },
+    {
+      "name": "get_ip_keys",
+      "type": "get_ip_keys",
+      "input_json": "example.json (find all keys that have IP addresses for values)"
+    },
+    {
+      "name": "extract_first_value_from_lists",
+      "type": "extract_first_value_from_lists",
+      "input_csv": "example.csv",
+      "columns": [
+        "column_name_to_turn_into_string_of_first_item_in_list"
+      ],
+      "replace_old_column": false
+    },
+    {
+      "name": "select_columns_from_csv",
+      "type": "select_columns_from_csv",
+      "input_csv": "example.csv",
+      "columns": [
+        "column_name1",
+        "column_name2"
+      ]
+    },
+    {
+      "name": "fill_empty_values_in_csv",
+      "type": "fill_empty_values_in_csv",
+      "input_csv": "example.csv",
+      "fill_values_dict": {
+        "column_name": "value_to_fill_empty_values_with"
+      }
+    },
+    {
+      "name": "remove_rows_with_empty_values",
+      "type": "remove_rows_with_empty_values",
+      "input_csv": "example.csv",
+      "columns": [
+        "column_name1",
+        "column_name2"
+      ]
+    },
+    {
+      "name": "format_datetime_columns_in_csv",
+      "type": "format_datetime_columns_in_csv",
+      "input_csv": "example.csv",
+      "columns": [
+        "state.last_seen"
+      ],
+      "replace_old_column": false
+    },
+    {
+      "name": "transform_columns_in_csv",
+      "type": "transform_columns_in_csv",
+      "input_csv": "example.csv",
+      "transformations": {
+        "column_to_be_created": "row['column_name1'] + '; ' + row['column_name2']"
+      }
+    },
+    {
+      "name": "bulk_value_search",
+      "type": "bulk_value_search",
+      "input_csv": "example.csv",
+      "search": [
+        "value_1",
+        "value_2"
+      ],
+      "truncation_limit": 32000
+    },
+    {
+      "name": "pivot_table",
+      "type": "pivot_table",
+      "input_csv": "example.csv",
+      "index_cols": [
+        "column_1",
+        "column_2"
+      ],
+      "pivot_cols": "",
+      "value_cols": [
+        "column_3"
+      ],
+      "group_by_cols": [
+        "column_3"
+      ],
+      "group_by": true,
+      "aggfunc": "count"
+    },
+    {
+      "name": "process_csv_remove_parentheses",
+      "type": "process_csv_remove_parentheses",
+      "input_csv": "example.csv",
+      "columns": [
+        "column_with_parentheses_at_the_end"
+      ],
+      "edit_in_place": false
+    }
+  ]
 }
